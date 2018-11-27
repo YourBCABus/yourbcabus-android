@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">YourBCABus</string>
+    <string name="lorem_ipsum">Lorem Ipsum</string>
+    <string name="genericLocation">Z9</string>
 </resources>
