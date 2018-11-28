@@ -1,5 +1,6 @@
 package com.yourbcabus.yourbcabus_android;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<BusModel> busList;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,14 +44,25 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        loadBuses();
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadBuses();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        loadBuses(true);
+
     }
 
-    private void loadBuses() {
+    private void loadBuses(final boolean firstRun) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, BASE_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        busList.clear();
                         try {
                             JSONArray busArray = new JSONArray(response);
 
@@ -72,8 +86,12 @@ public class MainActivity extends AppCompatActivity {
 
                             Collections.sort(busList, new BusComparator());
 
-                            adapter = new BusAdapter(MainActivity.this, busList);
-                            recyclerView.setAdapter(adapter);
+                            if (firstRun) {
+                                adapter = new BusAdapter(MainActivity.this, busList);
+                                recyclerView.setAdapter(adapter);
+                            } else {
+                                adapter.notifyDataSetChanged();
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -88,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         Volley.newRequestQueue(this).add(stringRequest);
+    }
+
+    private void loadBuses() {
+        loadBuses(false);
     }
 
     public class BusComparator implements Comparator<BusModel> {

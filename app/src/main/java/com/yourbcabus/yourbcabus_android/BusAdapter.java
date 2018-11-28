@@ -53,4 +53,9 @@ public class BusAdapter extends RecyclerView.Adapter<BusAdapter.BusViewHolder> {
 
         }
     }
+
+    public void clear() {
+        busList.clear();
+        notifyDataSetChanged();
+    }
 }
