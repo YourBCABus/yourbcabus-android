@@ -1,5 +1,9 @@
 package com.yourbcabus.yourbcabus_android;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     List<BusModel> busList;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +59,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         loadBuses(true);
-
+        handler.post(callLoadBuses);
     }
+
+    private Runnable callLoadBuses = new Runnable() {
+        @Override
+        public void run() {
+            loadBuses();
+            handler.postDelayed(callLoadBuses, 60*1000);
+        }
+    };
 
     private void loadBuses(final boolean firstRun) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, BASE_URL,
