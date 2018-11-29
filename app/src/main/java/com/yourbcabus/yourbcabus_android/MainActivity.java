@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     Handler handler = new Handler();
 
+    DBHandler db = new DBHandler(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +61,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
         loadBuses(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadBuses();
         handler.post(callLoadBuses);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        handler.removeCallbacks(callLoadBuses);
     }
 
     private Runnable callLoadBuses = new Runnable() {
         @Override
         public void run() {
             loadBuses();
-            handler.postDelayed(callLoadBuses, 60*1000);
+            handler.postDelayed(callLoadBuses, 10*1000);
         }
     };
 
@@ -76,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         busList.clear();
+                        db.deleteAll();
                         try {
                             JSONArray busArray = new JSONArray(response);
 
@@ -84,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 String name = busObject.getString("name");
                                 String invalidateTime = busObject.getString("invalidate_time");
+                                String id = busObject.getString("_id");
                                 String location = "";
 
                                 try {
@@ -93,8 +109,9 @@ public class MainActivity extends AppCompatActivity {
                                     location = "?";
                                 }
 
-                                BusModel bus = new BusModel(name, location, invalidateTime);
+                                BusModel bus = new BusModel(name, location, invalidateTime, id);
                                 busList.add(bus);
+                                db.addBus(bus);
                             }
 
                             Collections.sort(busList, new BusComparator());
@@ -114,7 +131,14 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+                        busList = db.getAllBuses();
+
+                        if (firstRun) {
+                            adapter = new BusAdapter(MainActivity.this, busList);
+                            recyclerView.setAdapter(adapter);
+                        } else {
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 });
 
