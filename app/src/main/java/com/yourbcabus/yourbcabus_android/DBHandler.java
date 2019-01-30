@@ -39,20 +39,20 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addBus(BusModel bus) {
+    public void addBus(Bus bus) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, bus.getName());
         values.put(KEY_LOCATION, bus.getLocation());
         values.put(KEY_INVALIDATETIME, bus.getInvalidateTime());
-        values.put(KEY_ID, bus.getID());
+        values.put(KEY_ID, bus.getId());
 
         db.insert(TABLE_BUSES, null, values);
         db.close();
     }
 
-    public BusModel getBus(int id) {
+    public Bus getBus(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_BUSES, new String[]{KEY_NAME, KEY_LOCATION, KEY_INVALIDATETIME, KEY_ID},
@@ -62,21 +62,21 @@ public class DBHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
         }
 
-        BusModel bus = new BusModel(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3));
+        Bus bus = new Bus(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3));
 
         return bus;
     }
 
-    public List<BusModel> getAllBuses() {
-        List<BusModel> busList = new ArrayList<BusModel>();
-        String selectQuery = "SELECT  * FROM " + TABLE_BUSES;
+    public List<Bus> getAllBuses() {
+        List<Bus> busList = new ArrayList<Bus>();
+        String selectQuery = "SELECT * FROM " + TABLE_BUSES;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
-                BusModel bus = new BusModel(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3));
+                Bus bus = new Bus(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3));
                 busList.add(bus);
             } while (cursor.moveToNext());
         }
