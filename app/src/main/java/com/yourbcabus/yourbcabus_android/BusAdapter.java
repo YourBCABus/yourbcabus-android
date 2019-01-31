@@ -13,9 +13,9 @@ import java.util.List;
 public class BusAdapter extends RecyclerView.Adapter<BusAdapter.BusViewHolder> {
 
     private Context context;
-    private List<BusModel> busList;
+    private List<Bus> busList;
 
-    public BusAdapter(Context context, List<BusModel> busList) {
+    public BusAdapter(Context context, List<Bus> busList) {
         this.context = context;
         this.busList = busList;
     }
@@ -30,7 +30,7 @@ public class BusAdapter extends RecyclerView.Adapter<BusAdapter.BusViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull BusViewHolder busViewHolder, int i) {
-        BusModel bus = busList.get(i);
+        Bus bus = busList.get(i);
 
         busViewHolder.textViewName.setText(bus.getName());
         busViewHolder.textViewLocation.setText(bus.getLocation());

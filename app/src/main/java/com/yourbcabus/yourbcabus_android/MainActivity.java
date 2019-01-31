@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     BusAdapter adapter;
 
-    List<BusModel> busList;
+    List<Bus> busList;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     Handler handler = new Handler();
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                                     location = "?";
                                 }
 
-                                BusModel bus = new BusModel(name, location, invalidateTime, id);
+                                Bus bus = new Bus(name, location, invalidateTime, id);
                                 busList.add(bus);
                                 db.addBus(bus);
                             }
@@ -149,9 +149,9 @@ public class MainActivity extends AppCompatActivity {
         loadBuses(false);
     }
 
-    public class BusComparator implements Comparator<BusModel> {
+    public class BusComparator implements Comparator<Bus> {
         @Override
-        public int compare(BusModel o1, BusModel o2) {
+        public int compare(Bus o1, Bus o2) {
             return o1.getName().compareToIgnoreCase(o2.getName());
         }
     }
